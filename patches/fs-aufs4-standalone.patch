@@ -1,0 +1,22 @@
+
+linux41/aufs4-standalone.patch
+f3fa30f on 25 Jul
+@philmmanjaro philmmanjaro Linux 4.1-rc1
+1 contributor
+331 lines (290 sloc) 9.6 KB
+aufs4.1 standalone patch
+
+diff --git a/fs/xattr.c b/fs/xattr.c
+index 4ef6985..6bb6303 100644
+--- a/fs/xattr.c
++++ b/fs/xattr.c
+@@ -207,6 +207,7 @@ vfs_getxattr_alloc(struct dentry *dentry, const char *name, char **xattr_value,
+ 	*xattr_value = value;
+ 	return error;
+ }
++EXPORT_SYMBOL_GPL(vfs_getxattr_alloc);
+ 
+ /* Compare an extended attribute value with the given value */
+ int vfs_xattr_cmp(struct dentry *dentry, const char *xattr_name,
+
+

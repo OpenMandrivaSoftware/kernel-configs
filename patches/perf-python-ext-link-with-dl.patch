@@ -1,0 +1,20 @@
+--- linux-3.14/tools/perf/util/setup.py	2014-07-11 18:40:34.927029845 +0400
++++ linux-3.14/tools/perf/util/setup.py.new	2014-07-11 18:38:50.000000000 +0400
+@@ -22,6 +22,9 @@ cflags = getenv('CFLAGS', '').split()
+ # switch off several checks (need to be at the end of cflags list)
+ cflags += ['-fno-strict-aliasing', '-Wno-write-strings', '-Wno-unused-parameter' ]
+ 
++libs = getenv('LIBS', '').split()
++libs += ['dl']
++
+ build_lib = getenv('PYTHON_EXTBUILD_LIB')
+ build_tmp = getenv('PYTHON_EXTBUILD_TMP')
+ libtraceevent = getenv('LIBTRACEEVENT')
+@@ -35,6 +38,7 @@ perf = Extension('perf',
+ 		  include_dirs = ['util/include'],
+ 		  extra_compile_args = cflags,
+ 		  extra_objects = [libtraceevent, libapikfs],
++		  libraries = libs,
+                  )
+ 
+ setup(name='perf',

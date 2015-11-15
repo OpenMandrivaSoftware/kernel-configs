@@ -1,0 +1,153 @@
+#!/usr/bin/perl
+
+# Copyright (C) 2002 by MandrakeSoft,
+# Juan Quintela <quintela@mandrakesoft.com>, 
+# Redistribution of this file is permitted under the terms of the GNU 
+# Public License (GPL)
+
+# stealed from use MDK::Common;
+
+# my $version=0.5;
+
+
+
+# MIB changelog
+#
+# kernel 3.7 - v 1.1 (02 feb 2013)
+#
+# kernel 3.7 - v 1.2 (14 feb 2013)
+# -laptop modify, now is full preempt
+# removed 4 lines, these have been replaced with nrj(v4)
+#	$values{PREEMPT_VOLUNTARY} = "y";
+#	$values{PREEMPT} = "n";
+#	$to_add{RCU_FAST_NO_HZ} = "n";
+#	$values{SCHED_BFS_RR_INTERVAL} = "6";
+# -all nrj flavours now are BFQ enabled by default
+#
+# kernel 3.7 - v 1.3 (05 mar 2013) 
+# ARM > fixed configs, removed all warnings, enabled configs
+#
+# kernel 3.8 - v 1.4 (09 mar 2013) 
+# ARM > add NTP_PPS to versatile config
+# config_x86_highmem > removed 1GB & 4GB(none), now only 64GB
+#
+# kernel 3.8 - v 1.5 (15 mar 2013) 
+# nrjQL_server & nrjQL_server_computing have now dynticks enabled
+#
+# kernel 3.8 - v 1.6 (24 mar 2013) - a sync with mga 3.8.3-2
+# enable XEN_BALLOON_MEMORY_HOTPLUG on server kernels (#9372)
+#
+# kernel 3.9 - v 1.7 (11 jun 2013) 
+# enabled TOI by default on all flavours (request by POK)
+#
+# kernel 3.10 - v 1.8 (15 aug 2013) - fixed -netbook when +pae
+# from $values{XEN} = "n"; >>> to >>> $to_add{XEN} = "n";
+#
+# kernel 3.10 - v 1.9 (01 sep 2013) - GZIP compression on server
+
+	$values{KERNEL_GZIP} = "y";
+	$values{KERNEL_XZ} = "n";
+
+# kernel 3.12 - v 2.0 (19 Dec 2013) - fixed _xen for kernel 3.12
+	sub config_xen {
+    	+$to_add{TCG_XEN} = "m";
+#
+# kernel 3.13 - v 2.1 (10 Mar 2014) - enable MEMCG on server kernels (mga#12629)
+# config modify >>> to _server{  
+#removed
+	$values{CGROUP_MEM_RES_CTLR} = "y";
+	$to_add{CGROUP_MEM_RES_CTLR_SWAP} = "n";
+	$to_add{CGROUP_MEM_RES_CTLR_KMEM} = "n";
+# added
+        $values{MEMCG} = "y";
+        $to_add{MEMCG_SWAP} = "y";
+        $to_add{MEMCG_SWAP_ENABLED} = "n";
+        $to_add{MEMCG_KMEM} = "y";
+        $to_add{MM_OWNER} = "y";
+#
+# kernel 3.14 - v 2.2 (30 June 2014) - added the new flavour: nrj-server
+# kernel-nrj-server has been added
+#
+# kernel 3.15 - v 2.2 for create_configs_QL (19 July 2014)
+# config a new key for TOI (the second one)
+# Allow Keep Image Mode (TOI_KEEP_IMAGE) [N/y/?] n
+# Incremental Image Support (TOI_INCREMENTAL) [N/y/?] (NEW) > y
+#
+# kernel 3.15.9 - v 2.3 (08 Aug 2014)
+# realtime have audio powersave disabled
+	$values{SND_AC97_POWER_SAVE_DEFAULT} = "0";
+	$values{SND_HDA_POWER_SAVE_DEFAULT} = "0";
+#
+# kernel 3.17.2 - v 2.4 (01 Nov 2014)
+# netbook now has NAMESPACES enabled
+# it seems that disabling NAMESPACES slow down a lot the dolphin operations
+
+#
+# Simple configuration suggestions for BFS:
+# http://ck.kolivas.org/patches/bfs/bfs-configuration-faq.txt
+# 
+# Desktop:
+# 1000 Hz
+# No tickless (possibly worth enabling for turbo enabled CPUs)
+# Full preemption
+# No cpu frequency scaling
+#                                           
+# Notebook / mobile device:
+# 300 Hz
+# Tickless
+# Full preemption
+# CPU frequency scaling, ondemand default
+#
+# Server (all sorts):
+# 100 Hz
+# No tickless
+# No preemption
+# No cpu frequency scaling
+# 
+# Counterstrike server:
+# 3000 Hz
+# No tickless
+# No preemption
+# No cpu frequency scaling
+#
+# Dedicated encoding / compiling / computational machine:
+# 100 Hz
+# No tickless
+# No preemption
+# No cpu frequency scaling
+# echo 300 > /proc/sys/kernel/rr_interval
+
+# most of nrjQL flavours with Tickless Mode disabled > NO_HZ=n
+
+# now default "power profile" is ONDEMAND
+# to change flavour level to PERF we need:
+# $values{CPU_FREQ_DEFAULT_GOV_ONDEMAND} = "n";
+# $to_add{CPU_FREQ_DEFAULT_GOV_PERFORMANCE} = "y";
+
+# BFQ
+	# $to_add{IOSCHED_BFQ} = "y";
+	# $to_add{CGROUP_BFQIO} = "y";
+	#
+	# first two key can be stay as "y"
+	# to enable as predefined I/O
+	#
+	# $values{DEFAULT_CFQ} = "n";
+	# $to_add{DEFAULT_BFQ} = "y";
+	# $to_add{DEFAULT_IOSCHED} = "bfq";
+
+# RIFS
+# RIFS cpu scheduler (SCHED_RIFS) [Y/n/?] (NEW) y
+# RIFS cpu scheduler ES mode (SCHED_RIFS_ES) [N/y/?] (NEW) y
+# CONFIG_SCHED_RIFS=y
+# CONFIG_SCHED_RIFS_ES=y
+
+# Solaris Porting Layer (SPL) (SPL) [N/m/y/?] (NEW)   
+# ZFS filesystem support (ZFS) [N/m/y/?] (NEW) 
+# if SPL yes then ZFS can be yes, if SPL=m then ZFS can be m
+# CONFIG_SPL=m
+# CONFIG_ZFS=m
+
+#
+# kernel 4.1.0 - v 4.1 (29 Jun 2015)
+# fixed some configs for "versatile"
+#

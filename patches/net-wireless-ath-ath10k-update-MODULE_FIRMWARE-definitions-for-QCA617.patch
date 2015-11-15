@@ -1,0 +1,42 @@
+From 5c427f5c1e7b55fe197fde14a81a88446182c2e4 Mon Sep 17 00:00:00 2001
+From: Bartosz Markowski <bartosz.markowski@tieto.com>
+Date: Wed, 18 Feb 2015 13:16:37 +0100
+Subject: [PATCH] ath10k: update MODULE_FIRMWARE definitions for QCA6174
+
+This has been missed while adding the QCA6174 support.
+As in the last time, without advertising the firmware files
+as needed (or optional) for ath10k, these won't be built into
+ram disk for instance.
+
+Signed-off-by: Bartosz Markowski <bartosz.markowski@tieto.com>
+Signed-off-by: Kalle Valo <kvalo@qca.qualcomm.com>
+---
+ drivers/net/wireless/ath/ath10k/pci.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+index 631b026..a238a14 100644
+--- a/drivers/net/wireless/ath/ath10k/pci.c
++++ b/drivers/net/wireless/ath/ath10k/pci.c
+@@ -2770,7 +2770,18 @@ module_exit(ath10k_pci_exit);
+ MODULE_AUTHOR("Qualcomm Atheros");
+ MODULE_DESCRIPTION("Driver support for Atheros QCA988X PCIe devices");
+ MODULE_LICENSE("Dual BSD/GPL");
++
++/* QCA988x 2.0 firmware files */
+ MODULE_FIRMWARE(QCA988X_HW_2_0_FW_DIR "/" QCA988X_HW_2_0_FW_FILE);
+ MODULE_FIRMWARE(QCA988X_HW_2_0_FW_DIR "/" ATH10K_FW_API2_FILE);
+ MODULE_FIRMWARE(QCA988X_HW_2_0_FW_DIR "/" ATH10K_FW_API3_FILE);
++MODULE_FIRMWARE(QCA988X_HW_2_0_FW_DIR "/" ATH10K_FW_API4_FILE);
+ MODULE_FIRMWARE(QCA988X_HW_2_0_FW_DIR "/" QCA988X_HW_2_0_BOARD_DATA_FILE);
++
++/* QCA6174 2.1 firmware files */
++MODULE_FIRMWARE(QCA6174_HW_2_1_FW_DIR "/" ATH10K_FW_API4_FILE);
++MODULE_FIRMWARE(QCA6174_HW_2_1_FW_DIR "/" QCA6174_HW_2_1_BOARD_DATA_FILE);
++
++/* QCA6174 3.1 firmware files */
++MODULE_FIRMWARE(QCA6174_HW_3_0_FW_DIR "/" ATH10K_FW_API4_FILE);
++MODULE_FIRMWARE(QCA6174_HW_3_0_FW_DIR "/" QCA6174_HW_3_0_BOARD_DATA_FILE);
+-- 
+2.3.10
+

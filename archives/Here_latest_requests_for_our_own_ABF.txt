@@ -1,0 +1,40 @@
+Hi,
+
+Nicco you can import you kernel to the ABF, as cooker is now working. Please 
+do not start many builds, keep at leas one at a time.
+
+Please set to "Y" below options in kernel as these are needed for docker and 
+our own ABF:
+
+CONFIG_CGROUP_CPUACCT
+CONFIG_CGROUP_SCHED
+CONFIG_MEMCG_SWAP_ENABLED
+CONFIG_CGROUP_PERF
+CONFIG_CGROUP_HUGETLB
+CONFIG_CGROUP_NET_PRIO
+CONFIG_CFS_BANDWIDTH
+CONFIG_FAIR_GROUP_SCHED
+CONFIG_RT_GROUP_SCHED
+
+
+Thanks.
+-- 
+Cheers
+TPG
+
+============================================================================
+
+Hi Nicco,
+Attached you'll fin the patches and a diff against the x84_64 config.
+Naming's are sorted so they load in the correct order.
+
+Here's changed config variable.
+
+New Setting.  CONFIG_AUFS_XATTR=y                    Old Setting # CONFIG_AUFS_XATTR is not set  
+The series file and fs-aufs-standalone.patch went in the patches directory
+the bfs-02-add-preempt_offset~o-should_resched().patch  one went into the QL directory.
+That's it. Everything built fine then
+Best,
+Colin
+
+
