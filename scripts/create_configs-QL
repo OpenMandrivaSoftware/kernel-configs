@@ -1164,7 +1164,7 @@ sub config_arm {
 
   if ( $name eq "iop32x" ) {
           $values{GENERIC_TIME} = "n";
-          $values{GENERIC_CLOCKEVENTS} = "n";
+        # $values{GENERIC_CLOCKEVENTS} = "n";
           $values{ARCH_IOP32X} = "y";
           $values{ARCH_KIRKWOOD} = "n";
           $to_add{MACH_EP80219} = "y";
