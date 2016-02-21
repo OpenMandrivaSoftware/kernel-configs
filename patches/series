@@ -1,5 +1,5 @@
 #
-# Kernel 4.1 series file (4.1.15)
+# Kernel 4.1 series file (4.1.18)
 #
 # This file describes the order in which patches should be applied
 # in the kernel and why the patch is needed.
@@ -58,11 +58,8 @@ x86-increase-default-minimum-vmalloc-area-by-64MB-to-192MB.patch
 # slows down boot
 Revert-cpufreq-pcc-Enable-autoload-of-pcc-cpufreq-fo.patch
 
-# (CVE-2015-5307)
-# x86-KVM-x86-work-around-infinite-loop-in-microcode-when-AC-is-delivered.patch
-
-# (CVE-2015-8104)
-x86-KVM-svm-unconditionally-intercept-DB.patch
+# (CVE-2015-8104) - removed from 4.1.18
+# x86-KVM-svm-unconditionally-intercept-DB.patch
 
 ###
 ### Core
@@ -149,6 +146,15 @@ block-cfq-iosched-fix-the-setting-of-IOPS-mode-on-SSDs.patch
 scsi-Revert-SCSI-Fix-NULL-pointer-dereference-in-runtime-PM.patch
 scsi-Fix-NULL-pointer-dereference-in-RTPM-of-block-layer.patch
 
+# reshape hang fix
+md-remove-check-for-MD_RECOVERY_NEEDED-in-action_store.patch
+
+# pmp reset fix
+ahci-Fix-softreset-failed-issue-of-Port-Multiplier.patch
+
+# sata_sil fails on trim
+ata-sata_sil-disable-trim.patch
+
 ###
 ### File-system
 ###
@@ -157,6 +163,9 @@ scsi-Fix-NULL-pointer-dereference-in-RTPM-of-block-layer.patch
 fs-aufs-4.1.patch
 fs-aufs-4.1-modular.patch
 fs-aufs4-standalone.patch
+
+# CVE-2015-8660
+fs-ovl-fix-permission-checking-for-setattr.patch
 
 ###
 ### FireWire
@@ -190,6 +199,12 @@ gpu-drm-mach64-restore-mach64_PCI_IDS.patch
 gpu-drm-mach64-linux-3.14-buildfix.patch
 gpu-drm-mach64-3.17-buildfix.patch
 gpu-drm-mach64-3.18-buildfix.patch
+
+# fix for possible overheating
+drm-nouveau-bios-fan-hardcode-the-fan-mode-to-linear.patch
+
+# vmgfx hang fix
+drm-ttm-Fixed-a-read-write-lock-imbalance.patch
 
 ###
 ### Hardware Monitoring
@@ -228,19 +243,6 @@ input-i8042-quirks-for-Fujitsu-Lifebook-A544-and-Lif.patch
 # SiS 190 fixes
 net-sis190-fix-list-usage.patch
 
-# netfilter IFWLOG support
-net-netfilter-IFWLOG.patch
-net-netfilter-IFWLOG-mdv.patch
-net-netfilter-IFWLOG-2.6.35-buildfix.patch
-net-netfilter-IFWLOG-2.6.37-buildfix.patch
-net-ipv4-netfilter-ipt_IFWLOG-3.6-buildfix.patch
-net-netfilter-IFWLOG-3.7-buildfix.patch
-
-# netfilter psd support
-net-netfilter-psd.patch
-net-netfilter-psd-mdv.patch
-net-netfilter-psd-2.6.35-buildfix.patch
-
 # QCA6174 fixes
 # https://bugs.mageia.org/show_bug.cgi?id=16915
 net-wireless-ath-ath10k-update-MODULE_FIRMWARE-definitions-for-QCA617.patch
@@ -254,9 +256,6 @@ net-wireless-ath-ath10k-clear-htt.freq.patch
 
 # rtlwifi boot fix
 net-wireless-rtlwifi-rtl8821ae-Fix-lockups-on-boot.patch
-
-# (CVE-2015-5156)
-# net-virtio-net-drop-NETIF_F_FRAGLIST.patch
 
 ###
 ### Platform drivers
@@ -286,6 +285,8 @@ include-kbuild-export-pci_ids.patch
 ### Staging
 ###
 
+# CVE-2015-7885
+staging-dgnc-fix-info-leak-in-ioctl.patch
 
 ###
 ### TTY
@@ -365,6 +366,9 @@ media-usb-pwc-lie-in-proc-usb-devices.patch
 ### Security
 ###
 
+# CVE-2015-7872
+keys-Don-t-permit-request_key-to-construct-a-new-key.patch
+
 ###
 ### Smack fixes
 ###
@@ -372,6 +376,25 @@ media-usb-pwc-lie-in-proc-usb-devices.patch
 ###
 ### XEN
 ###
+
+# CVE-2015-8550 / XSA-155
+xsa155-linux-xsa155-0001-xen-Add-RING_COPY_REQUEST.patch
+xsa155-linux-xsa155-0002-xen-netback-don-t-use-last-request-to-determine-mini.patch
+xsa155-linux-xsa155-0003-xen-netback-use-RING_COPY_REQUEST-throughout.patch
+xsa155-linux-xsa155-0004-xen-blkback-only-read-request-operation-from-shared-.patch
+xsa155-linux43-0005-xen-blkback-read-from-indirect-descriptors-only-once.patch
+xsa155-linux-xsa155-0006-xen-scsiback-safely-copy-requests.patch
+xsa155-linux-xsa155-0007-xen-pciback-Save-xen_pci_op-commands-before-processi.patch
+
+# CVE-2015-8551,CVE-2015-8552 / XSA-157
+xsa157-0001-xen-pciback-Return-error-on-XEN_PCI_OP_enable_msi-wh.patch
+xsa157-0002-xen-pciback-Return-error-on-XEN_PCI_OP_enable_msix-w.patch
+xsa157-0003-xen-pciback-Do-not-install-an-IRQ-handler-for-MSI-in.patch
+xsa157-0004-xen-pciback-For-XEN_PCI_OP_disable_msi-x-only-disabl.patch
+xsa157-0005-xen-pciback-Don-t-allow-MSI-X-ops-if-PCI_COMMAND_MEM.patch
+
+# misc fixes
+xen-events-fifo-Consume-unprocessed-events-when-a-CP.patch
 
 ###
 ### ARM

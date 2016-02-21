@@ -1,0 +1,34 @@
+From 025af189fb44250206dd8a32fa4a682392af3301 Mon Sep 17 00:00:00 2001
+From: Thomas Hellstrom <thellstrom@vmware.com>
+Date: Fri, 20 Nov 2015 11:43:50 -0800
+Subject: [PATCH] drm/ttm: Fixed a read/write lock imbalance
+
+In ttm_write_lock(), the uninterruptible path should call
+__ttm_write_lock() not __ttm_read_lock().  This fixes a vmwgfx hang
+on F23 start up.
+
+syeh: Extracted this from one of Thomas' internal patches.
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+Reviewed-by: Sinclair Yeh <syeh@vmware.com>
+---
+ drivers/gpu/drm/ttm/ttm_lock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/ttm/ttm_lock.c b/drivers/gpu/drm/ttm/ttm_lock.c
+index 6a95454..f154fb1 100644
+--- a/drivers/gpu/drm/ttm/ttm_lock.c
++++ b/drivers/gpu/drm/ttm/ttm_lock.c
+@@ -180,7 +180,7 @@ int ttm_write_lock(struct ttm_lock *lock, bool interruptible)
+ 			spin_unlock(&lock->lock);
+ 		}
+ 	} else
+-		wait_event(lock->queue, __ttm_read_lock(lock));
++		wait_event(lock->queue, __ttm_write_lock(lock));
+ 
+ 	return ret;
+ }
+-- 
+2.6.4
+

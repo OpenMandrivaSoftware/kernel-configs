@@ -1,0 +1,65 @@
+From 312045eef985b61d74c28047ecd8eca6719d9516 Mon Sep 17 00:00:00 2001
+From: NeilBrown <neilb@suse.com>
+Date: Mon, 21 Dec 2015 11:01:21 +1100
+Subject: [PATCH] md: remove check for MD_RECOVERY_NEEDED in action_store.
+
+md currently doesn't allow a 'sync_action' such as 'reshape' to be set
+while MD_RECOVERY_NEEDED is set.
+
+This s a problem, particularly since commit 738a273806ee as that can
+cause ->check_shape to call mddev_resume() which sets
+MD_RECOVERY_NEEDED.  So by the time we come to start 'reshape' it is
+very likely that MD_RECOVERY_NEEDED is still set.
+
+Testing for this flag is not really needed and is in any case very
+racy as it can be set at any moment - asynchronously.  Any race
+between setting a sync_action and setting MD_RECOVERY_NEEDED must
+already be handled properly in some locked code, probably
+md_check_recovery(), so remove the test here.
+
+The test on MD_RECOVERY_RUNNING is also racy in the 'reshape' case
+so we should test it again after getting mddev_lock().
+
+As this fixes a race and a regression which can cause 'reshape' to
+fail, it is suitable for -stable kernels since 4.1
+
+Reported-by: Xiao Ni <xni@redhat.com>
+Fixes: 738a273806ee ("md/raid5: fix allocation of 'scribble' array.")
+Cc: stable@vger.kernel.org (v4.1+)
+Signed-off-by: NeilBrown <neilb@suse.com>
+---
+ drivers/md/md.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index dbedc58..61aacab 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -4326,8 +4326,7 @@ action_store(struct mddev *mddev, const char *page, size_t len)
+ 			}
+ 			mddev_unlock(mddev);
+ 		}
+-	} else if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery) ||
+-		   test_bit(MD_RECOVERY_NEEDED, &mddev->recovery))
++	} else if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
+ 		return -EBUSY;
+ 	else if (cmd_match(page, "resync"))
+ 		clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
+@@ -4340,8 +4339,12 @@ action_store(struct mddev *mddev, const char *page, size_t len)
+ 			return -EINVAL;
+ 		err = mddev_lock(mddev);
+ 		if (!err) {
+-			clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
+-			err = mddev->pers->start_reshape(mddev);
++			if (test_bit(MD_RECOVERY_RUNNING, &mddev->recovery))
++				err =  -EBUSY;
++			else {
++				clear_bit(MD_RECOVERY_FROZEN, &mddev->recovery);
++				err = mddev->pers->start_reshape(mddev);
++			}
+ 			mddev_unlock(mddev);
+ 		}
+ 		if (err)
+-- 
+1.7.10.4
+

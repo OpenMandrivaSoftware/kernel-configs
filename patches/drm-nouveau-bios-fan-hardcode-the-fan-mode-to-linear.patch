@@ -1,0 +1,40 @@
+From a814a29d7bbfdfe56fe1bb9641a185077066eb9f Mon Sep 17 00:00:00 2001
+From: Martin Peres <martin.peres@free.fr>
+Date: Sun, 29 Nov 2015 16:10:18 +0200
+Subject: [PATCH] drm/nouveau/bios/fan: hardcode the fan mode to linear
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This is an oversight that made use of the trip-point-based fan managenent on
+cards that never expose those. This led the fan to stay at fan_min.
+
+Fortunately, the emergency code would kick when the temperature would reach
+90°C.
+
+Reported-by: Tom Englund <tomenglund26@gmail.com>
+Tested-by: Tom Englund <tomenglund26@gmail.com>
+Signed-off-by: Martin Peres <martin.peres@free.fr>
+Tested-by: Daemon32 <lnf.purple@gmail.com>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=92126
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Cc: stable@vger.kernel.org
+[rebase for 4.1 / tmb]
+Signed-off-by: Thomas Backlund <tmb@mageia.org>
+
+---
+ drivers/gpu/drm/nouveau/nvkm/subdev/bios/fan.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/fan.c b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/fan.c
+index 43006db..80fed7e 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/fan.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/fan.c
+@@ -83,6 +83,7 @@ nvbios_fan_parse(struct nvkm_bios *bios,
+ 			fan->type = NVBIOS_THERM_FAN_UNK;
+ 		}
+ 
++		fan->fan_mode = NVBIOS_THERM_FAN_LINEAR;
+ 		fan->min_duty = nv_ro08(bios, data + 0x02);
+ 		fan->max_duty = nv_ro08(bios, data + 0x03);
+ 
